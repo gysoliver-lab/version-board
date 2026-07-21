@@ -1,10 +1,10 @@
 // 版本数据 - 编辑这个文件来更新版本信息
 const VERSION_DATA = [
-    {
-        version: "v1.2.26",
+     {
+        version: "v1223",
         date: "2026-07-10",
-        content: "aaaa sss ddd",
-        isLatest: false
+        content: "1. 优化分析中的两个auto都改为先框再auto\n2. 优化dotblot的auto算法，检测更准确\n3. 优化手动框条带和圆最小宽高半径为0.5mm（之前是1.5mm）\n4. 修复合并图像未根据当前sample、marker亮度对比度情况进行合并的问题",
+        isLatest: true
     },
     {
         version: "v1.2.27",
@@ -16,7 +16,7 @@ const VERSION_DATA = [
         version: "v1.2.28",
         date: "2026-07-21",
         content: "cccc ddd fff",
-        isLatest: true
+        isLatest: false
     }
 ];
 
