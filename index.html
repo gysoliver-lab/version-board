@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件版本管理看板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            min-height: calc(100vh - 40px);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* 左上角 - 版本总数统计 */
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stat-number {
+            font-size: 72px;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        /* 右上角 - 更新趋势 */
+        .trend-card {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .trend-chart {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 20px 0;
+        }
+        
+        .trend-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px 8px 0 0;
+            transition: height 0.3s ease;
+            min-height: 40px;
+            position: relative;
+        }
+        
+        .trend-label {
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #999;
+            white-space: nowrap;
+        }
+        
+        /* 左下角 - 版本列表 */
+        .version-list-card {
+            grid-row: 2;
+        }
+        
+        .version-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .version-item {
+            display: grid;
+            grid-template-columns: 100px 120px 1fr auto;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .version-item:hover {
+            background: #f0f4ff;
+        }
+        
+        .version-item.active {
+            background: #e8f0ff;
+            border-left: 4px solid #667eea;
+        }
+        
+        .version-item:last-child {
+            border-bottom: none;
+        }
+        
+        .version-number {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .version-date {
+            color: #666;
+        }
+        
+        .version-content {
+            color: #555;
+            white-space: pre-line;
+        }
+        
+        .version-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 右下角 - 最新版本大字报 */
+        .latest-version-card {
+            grid-row: 2;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .latest-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .latest-header h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .latest-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .latest-info {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .latest-version-number {
+            font-size: 64px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .latest-date {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+        
+        .latest-content-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 24px;
+            border-radius: 12px;
+            margin: 0 auto;
+            max-width: 80%;
+        }
+        
+        .latest-content-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+        
+        .latest-content-text {
+            font-size: 18px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            
+            .latest-version-number {
+                font-size: 48px;
+            }
+            
+            .stat-number {
+                font-size: 56px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .version-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .version-badge {
+                margin-top: 8px;
+            }
+        }
+        
+        /* 滚动条美化 */
+        .version-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .version-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .version-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .version-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 左上角 - 版本总数统计 -->
+        <div class="card stat-card">
+            <div class="stat-number" id="totalCount">0</div>
+            <div class="stat-label">版本记录总数</div>
+        </div>
+        
+        <!-- 右上角 - 更新趋势 -->
+        <div class="card trend-card">
+            <div class="card-title">
+                <span>📊</span>
+                <span>更新趋势</span>
+            </div>
+            <div class="trend-chart" id="trendChart"></div>
+        </div>
+        
+        <!-- 左下角 - 版本列表 -->
+        <div class="card version-list-card">
+            <div class="card-title">
+                <span>📋</span>
+                <span>版本历史记录</span>
+            </div>
+            <div class="version-list" id="versionList"></div>
+        </div>
+        
+        <!-- 右下角 - 最新版本大字报 -->
+        <div class="card latest-version-card">
+            <div class="latest-header">
+                <h2>📋 最新软件版本信息</h2>
+                <span class="latest-badge">✨ 最新版本</span>
+            </div>
+            <div class="latest-info">
+                <div class="latest-version-number" id="latestVersion">-</div>
+                <div class="latest-date" id="latestDate">-</div>
+                <div class="latest-content-box">
+                    <div class="latest-content-label">📝 更新内容</div>
+                    <div class="latest-content-text" id="latestContent">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script>
+        // 渲染版本总数
+        document.getElementById('totalCount').textContent = getVersionCount();
+        
+        // 渲染最新版本
+        const latest = getLatestVersion();
+        if (latest) {
+            document.getElementById('latestVersion').textContent = latest.version;
+            document.getElementById('latestDate').textContent = '📅 更新时间：' + latest.date;
+            document.getElementById('latestContent').textContent = latest.content;
+        }
+        
+        // 当前选中的版本
+        let currentVersion = getLatestVersion();
+        
+        // 更新右侧大字报显示
+        function updateLatestDisplay(version) {
+            document.getElementById('latestVersion').textContent = version.version;
+            document.getElementById('latestDate').textContent = '📅 更新时间：' + version.date;
+            document.getElementById('latestContent').textContent = version.content;
+            
+            // 更新版本标记
+            const badge = document.querySelector('.latest-badge');
+            if (badge) {
+                badge.textContent = version.isLatest ? '✨ 最新版本' : '📌 历史版本';
+            }
+        }
+        
+        // 初始化显示最新版本
+        updateLatestDisplay(currentVersion);
+        
+        // 渲染版本列表
+        const versionList = document.getElementById('versionList');
+        getAllVersions().forEach((v, index) => {
+            const item = document.createElement('div');
+            item.className = 'version-item' + (v.isLatest ? ' active' : '');
+            item.innerHTML = `
+                <div class="version-number">${v.version}</div>
+                <div class="version-date">${v.date}</div>
+                <div class="version-content">${v.content}</div>
+                ${v.isLatest ? '<div class="version-badge">最新</div>' : ''}
+            `;
+            
+            // 点击事件
+            item.addEventListener('click', () => {
+                // 移除所有active类
+                document.querySelectorAll('.version-item').forEach(el => el.classList.remove('active'));
+                // 添加当前active类
+                item.classList.add('active');
+                // 更新右侧显示
+                currentVersion = v;
+                updateLatestDisplay(v);
+            });
+            
+            versionList.appendChild(item);
+        });
+        
+        // 渲染趋势图
+        const trendChart = document.getElementById('trendChart');
+        const recentVersions = VERSION_DATA.slice(-10); // 最近10个版本
+        const maxVersions = Math.max(...recentVersions.map((_, i) => i + 1));
+        
+        recentVersions.forEach((v, i) => {
+            const bar = document.createElement('div');
+            bar.className = 'trend-bar';
+            const height = 20 + (i / (recentVersions.length - 1 || 1)) * 80;
+            bar.style.height = height + '%';
+            
+            const label = document.createElement('div');
+            label.className = 'trend-label';
+            label.textContent = v.date.substring(5); // 只显示月-日
+            bar.appendChild(label);
+            
+            trendChart.appendChild(bar);
+        });
+        
+        // 添加页脚提示
+        const footer = document.createElement('div');
+        footer.style.cssText = 'text-align: center; color: #999; font-size: 12px; margin-top: 20px;';
+        footer.textContent = '编辑 data.js 文件更新版本信息';
+        document.body.appendChild(footer);
+    </script>
+</body>
+</html>
