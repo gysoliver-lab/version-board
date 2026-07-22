@@ -112,12 +112,13 @@
         
         .version-item {
             display: grid;
-            grid-template-columns: 100px 120px 1fr auto;
-            gap: 16px;
-            padding: 16px;
+            grid-template-columns: 90px 110px 1fr auto;
+            gap: 12px;
+            padding: 12px 16px;
             border-bottom: 1px solid #f0f0f0;
             transition: background 0.2s;
             cursor: pointer;
+            align-items: center;
         }
         
         .version-item:hover {
@@ -136,15 +137,21 @@
         .version-number {
             font-weight: 600;
             color: #333;
+            font-size: 14px;
         }
         
         .version-date {
             color: #666;
+            font-size: 13px;
         }
         
         .version-content {
             color: #555;
-            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+            max-width: 100%;
         }
         
         .version-badge {
@@ -349,10 +356,14 @@
         getAllVersions().forEach((v, index) => {
             const item = document.createElement('div');
             item.className = 'version-item' + (v.isLatest ? ' active' : '');
+            
+            // 提取第一行作为缩略显示
+            const firstLine = v.content.split('\n')[0];
+            
             item.innerHTML = `
                 <div class="version-number">${v.version}</div>
                 <div class="version-date">${v.date}</div>
-                <div class="version-content">${v.content}</div>
+                <div class="version-content" title="${v.content.replace(/"/g, '&quot;')}">${firstLine}</div>
                 ${v.isLatest ? '<div class="version-badge">最新</div>' : ''}
             `;
             
