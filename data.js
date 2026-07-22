@@ -1,6 +1,6 @@
 // 版本数据 - 编辑这个文件来更新版本信息
 const VERSION_DATA = [
-     {
+    {
         version: "v1223",
         date: "2026-05-21",
         content: "1. 优化分析中的两个auto都改为先框再auto\n2. 优化dotblot的auto算法，检测更准确\n3. 优化手动框条带和圆最小宽高半径为0.5mm（之前是1.5mm）\n4. 修复合并图像未根据当前sample、marker亮度对比度情况进行合并的问题",
