@@ -351,9 +351,9 @@
         // 初始化显示最新版本
         updateLatestDisplay(currentVersion);
         
-        // 渲染版本列表
+        // 渲染版本列表（新→旧，最新版本置顶）
         const versionList = document.getElementById('versionList');
-        getAllVersions().forEach((v, index) => {
+        VERSION_DATA.forEach((v, index) => {
             const item = document.createElement('div');
             item.className = 'version-item' + (v.isLatest ? ' active' : '');
             
@@ -383,7 +383,7 @@
         
         // 渲染趋势图
         const trendChart = document.getElementById('trendChart');
-        const recentVersions = VERSION_DATA.slice(-10); // 最近10个版本
+        const recentVersions = VERSION_DATA.slice(0, 10); // 最近10个版本（最新）
         const maxVersions = Math.max(...recentVersions.map((_, i) => i + 1));
         
         recentVersions.forEach((v, i) => {
