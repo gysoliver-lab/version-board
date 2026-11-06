@@ -1,10 +1,16 @@
 // 版本数据 - 编辑这个文件来更新版本信息
 const VERSION_DATA = [
     {
+        version: "v1.8.x.1250",
+        date: "2026-11-06",
+        content: "修复以下BUG：\n1.解决USB3.0设备采集卡死的BUG\n2.优化丢线采集失败问题\n3.解决SE模组图像采集异常的问题\n4.解决USB3.0设备开盖时启动软件重新连接的问题",
+        isLatest: true
+    },
+    {
         version: "v1.8.x.1247",
         date: "2026-11-05",
         content: "1.解决Pro系列模组兼容3段以上温漂模板的问题\n2.图像导出分辨率需要72-2400DPI\n3.新增空闲锁屏功能\n4.新增序列号段\nUSB3.0机型：\n5.增加开盖检测功能\n6.增加支持按键采集功能",
-        isLatest: true
+        isLatest: false
     },
     {
         version: "v1.8.x.1239",
